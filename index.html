@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Music — Sonic Gallery</title>
+  <meta name="description" content="Aura Music — A minimalist, high-fidelity music experience powered by YouTube's vast catalog. Clean, distraction-free, and beautiful.">
+  <meta name="theme-color" content="#0e0e0e">
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>
+    /* ── Page visibility & layout glue ── */
+    .page { display: none; }
+    .page.active { display: block; animation: viewIn 0.25s var(--ease-out) both; }
+
+    /* Volume slider fill via CSS custom property */
+    .volume-slider,
+    .np-volume-slider {
+      --pct: 85%;
+      background: linear-gradient(to right,
+        var(--on-surface) 0%,
+        var(--on-surface) var(--pct),
+        var(--surface-high) var(--pct),
+        var(--surface-high) 100%);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     HIDDEN YOUTUBE IFRAME PLAYER
+══════════════════════════════════════════════════════════ -->
+<div id="yt-player-container" aria-hidden="true"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════════════════════════════ -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       LANDING VIEW
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="view-landing" class="view active" aria-label="Welcome screen">
+    <div class="landing-content">
+      <div class="landing-logo anim-logo">
+        <h1>Aura</h1>
+        <p class="tagline anim-subtitle">Sonic Gallery</p>
+      </div>
+
+      <div class="landing-actions">
+        <!-- Google Sign-In -->
+        <button class="btn-google anim-btn" id="btn-google" aria-label="Sign in with Google">
+          <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Sign in with Google
+        </button>
+
+        <!-- Guest -->
+        <button class="btn-guest anim-btn" id="btn-guest" aria-label="Continue without signing in">
+          Continue as Guest
+        </button>
+      </div>
+    </div>
+
+    <p class="landing-footer">High-Fidelity Audio Experience</p>
+  </section>
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       MAIN VIEW (Sidebar + Content)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="view-main" class="view" aria-label="Main application">
+
+    <!-- ── SIDEBAR ──────────────────────────────────────── -->
+    <nav class="sidebar" aria-label="Main navigation">
+      <div class="sidebar-brand">
+        <div class="brand-name">Aura<br>Music</div>
+        <div class="brand-sub">Sonic Gallery</div>
+      </div>
+
+      <ul class="sidebar-nav" role="list">
+        <li>
+          <button class="nav-item active" data-page="home" aria-label="Home" role="listitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Home
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-page="search" aria-label="Search" role="listitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Search
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-page="library" aria-label="Library" role="listitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Library
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ── MAIN CONTENT ─────────────────────────────────── -->
+    <div class="main-content">
+
+      <!-- API Key Banner -->
+      <div class="api-banner" id="api-banner" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        No YouTube API key set — search won't work.
+        <a id="api-banner-link" role="button">Add API Key →</a>
+      </div>
+
+      <!-- Top Bar -->
+      <header class="topbar" role="banner">
+        <div class="search-bar" id="search-bar-wrap" role="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="text"
+            id="topbar-search-input"
+            placeholder="Search albums, artists, or moods..."
+            autocomplete="off"
+            aria-label="Search music"
+          >
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="settings-btn" aria-label="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+          
+          <div class="avatar-wrap">
+            <div class="avatar-btn" id="topbar-avatar" role="button" aria-label="User profile" tabindex="0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            
+            <div class="profile-dropdown" id="profile-dropdown">
+              <div class="pd-header">
+                <div class="pd-name">Guest</div>
+                <div class="pd-email">Not signed in</div>
+              </div>
+              <button class="pd-btn" id="btn-sign-out">Sign Out</button>
+            </div>
+          </div>
+          
+        </div>
+      </header>
+
+      <!-- ── Search Filter Tabs (shown on search page) ─── -->
+      <div id="search-tabs-bar" style="display:none;border-bottom:1px solid var(--border);background:var(--surface)">
+        <div class="search-tabs" role="tablist" style="padding:0 var(--space-6)">
+          <button class="tab-btn active" data-tab="top"     role="tab" aria-selected="true">Top Results</button>
+          <button class="tab-btn"        data-tab="tracks"  role="tab" aria-selected="false">Tracks</button>
+          <button class="tab-btn"        data-tab="albums"  role="tab" aria-selected="false">Albums</button>
+          <button class="tab-btn"        data-tab="artists" role="tab" aria-selected="false">Artists</button>
+        </div>
+      </div>
+
+      <!-- ── PAGES ─────────────────────────────────────── -->
+
+      <!-- HOME PAGE -->
+      <main class="page active page-scroll" id="page-home" role="main" aria-label="Home">
+        <h1 class="greeting" id="greeting-text">Good Evening.</h1>
+
+        <!-- Recently Played -->
+        <section aria-label="Recently Played">
+          <div class="section-header">
+            <h2 class="section-title">Recently Played</h2>
+            <button class="section-link" id="view-all-recent" aria-label="View all recently played">VIEW ALL</button>
+          </div>
+          <div class="recently-grid" id="recently-played-grid" role="list" aria-label="Recently played tracks">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- Recommended -->
+        <section aria-label="Recommended for You">
+          <div class="section-header">
+            <h2 class="section-title">Recommended for You</h2>
+          </div>
+          <div class="recommended-grid" id="recommended-grid" role="list" aria-label="Recommended playlists">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+      </main>
+
+      <!-- SEARCH PAGE -->
+      <main class="page page-scroll" id="page-search" role="main" aria-label="Search">
+        <div id="search-content">
+          <!-- Populated by JS -->
+        </div>
+      </main>
+
+      <!-- LIBRARY PAGE -->
+      <main class="page page-scroll" id="page-library" role="main" aria-label="Library">
+        <h1 class="library-title">Library</h1>
+
+        <!-- Favorites -->
+        <section aria-label="Favorite Songs">
+          <div class="section-header">
+            <h2 class="section-title">Favorite Songs</h2>
+            <button class="section-link" aria-label="See all favorites">SEE ALL</button>
+          </div>
+          <div class="favorites-list" id="favorites-list" role="list">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- Saved Albums -->
+        <section aria-label="Saved Albums">
+          <div class="section-header" style="margin-top:var(--space-8)">
+            <h2 class="section-title">Saved Albums</h2>
+          </div>
+          <div class="saved-albums-grid" id="saved-albums-grid" role="list">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+      </main>
+
+    </div><!-- /.main-content -->
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         MINI PLAYER (persistent bottom bar)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="mini-player" class="hidden" role="region" aria-label="Now playing">
+
+      <!-- Progress bar (top edge of mini player) -->
+      <div class="mini-player-progress" id="mini-progress-bar" role="progressbar" aria-label="Track progress">
+        <div class="mini-progress-fill" id="mini-progress-fill"></div>
+      </div>
+
+      <!-- Track info -->
+      <div class="mini-track-info">
+        <div class="mini-thumb" role="button" aria-label="Open now playing" tabindex="0">
+          <img src="" alt="Album art" id="mini-thumb-img">
+        </div>
+        <div class="mini-text" role="button" tabindex="0">
+          <div class="mini-title" id="mini-title">—</div>
+          <div class="mini-artist" id="mini-artist">—</div>
+        </div>
+        <button class="mini-fav" aria-label="Add to favorites">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+      </div>
+
+      <!-- Center controls -->
+      <div class="mini-controls">
+        <button class="mini-ctrl-btn" id="mini-shuffle" aria-label="Shuffle" title="Shuffle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </button>
+        <button class="mini-ctrl-btn" id="mini-skip-prev" aria-label="Previous track">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="mini-play-btn" id="mini-play-btn" aria-label="Play/Pause">
+          <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <button class="mini-ctrl-btn" id="mini-skip-next" aria-label="Next track">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+        <button class="mini-ctrl-btn" id="mini-repeat" aria-label="Repeat" title="Repeat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </button>
+      </div>
+
+      <!-- Right: time + volume + queue -->
+      <div class="mini-right">
+        <span class="mini-time" id="mini-time">0:00 / 0:00</span>
+        <div class="mini-volume">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <input type="range" class="volume-slider" id="mini-volume-slider"
+                 min="0" max="100" value="85" aria-label="Volume">
+        </div>
+      </div>
+
+    </div><!-- /#mini-player -->
+
+  </section><!-- /#view-main -->
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       NOW PLAYING FULL VIEW
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="view-now-playing" aria-label="Now Playing" aria-modal="true" role="dialog">
+
+    <!-- Adaptive background layers -->
+    <div class="np-bg" aria-hidden="true"></div>
+    <div class="np-bg-blur" aria-hidden="true"></div>
+
+    <!-- Content -->
+    <div class="np-content">
+
+      <!-- Header -->
+      <div class="np-header">
+        <button class="np-close-btn" id="np-close-btn" aria-label="Minimize player">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="icon-btn np-more-btn" aria-label="More options">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+      </div>
+
+      <!-- Album Art -->
+      <div class="np-art-wrap" role="img" aria-label="Album artwork">
+        <img src="" alt="Album art" id="np-art-img" class="">
+      </div>
+
+      <!-- Track Info -->
+      <div class="np-track-info">
+        <h1 class="np-title" id="np-title">—</h1>
+        <p class="np-artist" id="np-artist">—</p>
+      </div>
+
+      <!-- Progress — [2:14] ——bar—— [5:32] inline -->
+      <div class="np-progress-area">
+        <div class="np-progress-row">
+          <span class="np-time-current" id="np-time-current">0:00</span>
+          <div class="np-progress-bar" id="np-progress-bar" role="slider"
+               aria-label="Seek track" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="np-progress-fill" id="np-progress-fill"></div>
+          </div>
+          <span class="np-time-total" id="np-time-total">0:00</span>
+        </div>
+      </div>
+
+      <!-- Main Controls -->
+      <div class="np-controls">
+        <button class="np-ctrl" id="np-shuffle" aria-label="Shuffle" title="Shuffle (S)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </button>
+        <button class="np-ctrl" id="np-skip-prev" aria-label="Previous track">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:28px;height:28px"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="np-play-btn" id="np-play-btn" aria-label="Play/Pause">
+          <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <button class="np-ctrl" id="np-skip-next" aria-label="Next track">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:28px;height:28px"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+        <button class="np-ctrl" id="np-repeat" aria-label="Repeat" title="Repeat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </button>
+      </div>
+
+      <!-- Secondary controls: cast icon left | volume right -->
+      <div class="np-secondary">
+        <div class="np-secondary-left">
+          <button class="np-cast-btn" aria-label="Connect to a device">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 20h4"/><path d="M2 17a5 5 0 0 1 5 5"/><path d="M2 14a8 8 0 0 1 8 8"/></svg>
+          </button>
+        </div>
+        <div class="np-secondary-right">
+          <div class="np-volume">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <input type="range" class="np-volume-slider" id="np-volume-slider"
+                   min="0" max="100" value="85" aria-label="Volume">
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.np-content -->
+  </section><!-- /#view-now-playing -->
+
+</div><!-- /#app -->
+
+<!-- ═══════════════════════════════════════════════════════
+     SETTINGS MODAL
+══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-settings" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+  <div class="modal">
+    <h2 class="modal-title" id="settings-modal-title">Settings</h2>
+
+    <label class="modal-label">Audio Quality</label>
+    <div class="modal-radio-group">
+      <label class="modal-radio"><input type="radio" name="quality" value="high" checked> High</label>
+      <label class="modal-radio"><input type="radio" name="quality" value="medium"> Medium</label>
+      <label class="modal-radio"><input type="radio" name="quality" value="low"> Data Saver</label>
+    </div>
+
+    <label class="modal-label" style="margin-top: var(--space-5)">Autoplay</label>
+    <label class="modal-toggle">
+      <input type="checkbox" id="setting-autoplay" checked>
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span>Continue playing similar tracks</span>
+    </label>
+
+    <label class="modal-label" style="margin-top: var(--space-5)">Crossfade</label>
+    <label class="modal-toggle">
+      <input type="checkbox" id="setting-crossfade">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span>Smooth transitions between tracks</span>
+    </label>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modal-settings-cancel">Cancel</button>
+      <button class="btn-primary"   id="modal-settings-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JS — ES Modules
+══════════════════════════════════════════════════════════ -->
+<script type="module" src="js/app.js"></script>
+
+<!-- ── Page switching glue (search tab visibility) ── -->
+<script>
+  // Show/hide search tabs based on active page
+  const observer = new MutationObserver(() => {
+    const searchPage = document.getElementById('page-search');
+    const tabsBar    = document.getElementById('search-tabs-bar');
+    if (searchPage && tabsBar) {
+      tabsBar.style.display = searchPage.classList.contains('active') ? 'block' : 'none';
+    }
+  });
+  document.querySelectorAll('.page').forEach(p =>
+    observer.observe(p, { attributes: true, attributeFilter: ['class'] })
+  );
+
+  // Volume slider fill update
+  document.querySelectorAll('.volume-slider, .np-volume-slider').forEach(slider => {
+    function update() {
+      slider.style.setProperty('--pct', `${slider.value}%`);
+    }
+    slider.addEventListener('input', update);
+    update();
+  });
+</script>
+
+</body>
+</html>

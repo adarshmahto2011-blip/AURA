@@ -1,0 +1,97 @@
+/* =========================================================
+   AURA MUSIC — Design Tokens
+   Derived from DESIGN.md / Sonic Gallery design system
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────────── */
+  --bg:                       #0e0e0e;
+  --surface:                  #131313;
+  --surface-dim:              #131313;
+  --surface-bright:           #393939;
+  --surface-low:              #1c1b1b;
+  --surface-container:        #20201f;
+  --surface-high:             #2a2a2a;
+  --surface-highest:          #353535;
+
+  /* ── On-Surface / Text ────────────────────────────────── */
+  --on-surface:               #e5e2e1;
+  --on-surface-dim:           #988e90;
+  --on-surface-mid:           #cfc4c5;
+
+  /* ── Borders & Outlines ───────────────────────────────── */
+  --border:                   #1a1a1a;
+  --outline:                  #4c4546;
+  --outline-strong:           #988e90;
+
+  /* ── Accent — Vivid Indigo ────────────────────────────── */
+  --accent:                   #6366F1;
+  --accent-dim:               rgba(99, 102, 241, 0.25);
+  --accent-hover:             #7c7ef5;
+
+  /* ── Semantic ─────────────────────────────────────────── */
+  --error:                    #ffb4ab;
+  --success:                  #4caf50;
+
+  /* ── Typography ───────────────────────────────────────── */
+  --font:                     'Inter', system-ui, -apple-system, sans-serif;
+
+  --fs-display:               48px;
+  --fs-display-m:             32px;
+  --fs-headline:              24px;
+  --fs-title:                 20px;
+  --fs-body-lg:               18px;
+  --fs-body:                  16px;
+  --fs-body-sm:               14px;
+  --fs-label:                 12px;
+  --fs-mono:                  11px;
+
+  --fw-regular:               400;
+  --fw-medium:                500;
+  --fw-semibold:              600;
+  --fw-bold:                  700;
+  --fw-extrabold:             800;
+
+  --lh-tight:                 1.1;
+  --lh-snug:                  1.25;
+  --lh-normal:                1.5;
+
+  /* ── Spacing (4px grid) ───────────────────────────────── */
+  --space-1:                  4px;
+  --space-2:                  8px;
+  --space-3:                  12px;
+  --space-4:                  16px;
+  --space-5:                  20px;
+  --space-6:                  24px;
+  --space-8:                  32px;
+  --space-10:                 40px;
+  --space-12:                 48px;
+  --space-16:                 64px;
+
+  /* ── Radii ────────────────────────────────────────────── */
+  --radius-sm:                4px;
+  --radius:                   8px;
+  --radius-md:                12px;
+  --radius-lg:                16px;
+  --radius-xl:                24px;
+  --radius-full:              9999px;
+
+  /* ── Layout ───────────────────────────────────────────── */
+  --sidebar-w:                240px;
+  --mini-player-h:            80px;
+  --topbar-h:                 64px;
+
+  /* ── Transitions ──────────────────────────────────────── */
+  --ease-out:                 cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:              cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:            150ms;
+  --duration:                 250ms;
+  --duration-slow:            450ms;
+
+  /* ── Glass / Blur ─────────────────────────────────────── */
+  --glass-bg:                 rgba(13, 13, 13, 0.75);
+  --glass-blur:               blur(32px);
+  --glass-border:             rgba(255, 255, 255, 0.06);
+}
