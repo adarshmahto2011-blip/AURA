@@ -407,7 +407,7 @@ function renderSearchResults(results, tab) {
   }
 
   if (tab === 'artists') {
-    content.innerHTML = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)" id="search-artists-grid"></div>';
+    content.innerHTML = '<div class="artists-grid" id="search-artists-grid"></div>';
     const grid = document.getElementById('search-artists-grid');
     results.artists.forEach(a => {
       const card = document.createElement('div');

@@ -1,7 +1,7 @@
 # ── Secrets ──────────────────────────────────────────────────
 # Real API key and runtime config — NEVER commit these
 .env
-js/config.js
+# js/config.js is intentionally tracked so Vercel can serve it
 
 # ── OS / Editor ───────────────────────────────────────────────
 .DS_Store
@@ -12,3 +12,5 @@ Thumbs.db
 # ── Logs / Cache ──────────────────────────────────────────────
 *.log
 node_modules/
+
+.vercel
