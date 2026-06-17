@@ -1,7 +1,7 @@
 # ── Secrets ──────────────────────────────────────────────────
-# Real API key and runtime config — NEVER commit these
+# Real API keys — NEVER commit these
 .env
-# js/config.js is intentionally tracked so Vercel can serve it
+js/config.js
 
 # ── OS / Editor ───────────────────────────────────────────────
 .DS_Store

@@ -3,7 +3,7 @@
  * Bootstraps the app, wires all events, manages global state.
  */
 
-import { CONFIG } from './config.js';
+import { CONFIG, loadConfig } from './config.js';
 import { onAuthStateChange, signInWithGoogle, signOut, isSignedIn } from './auth.js';
 import { upsertProfile, loadFavorites, loadHistory, loadPreferences, savePreferences } from './db.js';
 import { initYouTubePlayer, playVideo, pause, resume, seekTo, setVolume, getCurrentTime, getDuration, isPlaying } from './player.js';
@@ -50,6 +50,9 @@ const BROWSE_CATEGORIES = [
 
 // ── Init ─────────────────────────────────────────────────────
 async function init() {
+  // Fetch secrets from /api/config (Vercel env vars) — must be first
+  await loadConfig();
+
   // Load YouTube API key from config.js (gitignored, sourced from .env)
   if (!localStorage.getItem('aura_yt_api_key') && CONFIG.YT_API_KEY) {
     localStorage.setItem('aura_yt_api_key', CONFIG.YT_API_KEY);
