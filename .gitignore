@@ -1,7 +1,7 @@
 # ── Secrets ──────────────────────────────────────────────────
 # Real API keys — NEVER commit these
 .env
-js/config.js
+# js/config.js is safe to commit — it contains NO secrets (fetches from /api/config)
 
 # ── OS / Editor ───────────────────────────────────────────────
 .DS_Store
